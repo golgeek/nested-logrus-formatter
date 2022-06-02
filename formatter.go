@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/acarl005/stripansi"
 	"github.com/sirupsen/logrus"
 )
 
@@ -27,6 +28,9 @@ type Formatter struct {
 
 	// NoFieldsColors - apply colors only to the level, default is level + fields
 	NoFieldsColors bool
+
+	// StripAnsiColors - strip ANSI colors in the log message
+	StripAnsiColors bool
 
 	// NoFieldsSpace - no space between fields
 	NoFieldsSpace bool
@@ -107,6 +111,10 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 	if !f.NoColors && !f.NoFieldsColors {
 		b.WriteString("\x1b[0m")
+	}
+
+	if f.StripAnsiColors {
+		entry.Message = stripansi.Strip(entry.Message)
 	}
 
 	// write message
